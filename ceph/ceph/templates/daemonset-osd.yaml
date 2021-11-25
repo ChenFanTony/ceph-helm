@@ -21,7 +21,7 @@ limitations under the License.
 {{- $dependencies := .Values.dependencies.osd }}
 ---
 kind: DaemonSet
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 metadata:
   name: ceph-osd
 spec:

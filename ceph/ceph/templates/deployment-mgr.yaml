@@ -21,13 +21,16 @@ limitations under the License.
 {{- $dependencies := .Values.dependencies.mgr }}
 ---
 kind: Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: ceph-mgr
 spec:
   replicas: {{ .Values.pod.replicas.mgr }}
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+{{ tuple $envAll "ceph" "mgr" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 6 }}
   template:
     metadata:
       labels:

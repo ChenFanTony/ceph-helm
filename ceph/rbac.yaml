@@ -1,4 +1,4 @@
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: ceph-all
@@ -16,7 +16,7 @@ rules:
   resources: ["jobs"]
   verbs: ["get", "create", "watch", "delete", "update"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: ceph-sc
@@ -28,7 +28,7 @@ rules:
   resources: ["storageclasses"]
   verbs: ["get", "create", "delete", "list", "watch"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kube-system-cm
@@ -37,7 +37,7 @@ rules:
   resources: ["configmaps", "secrets"]
   verbs: ["create", "list", "get", "delete", "update"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: role-ceph
@@ -51,7 +51,7 @@ subjects:
   name: default
   namespace: kube-system
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: role-kube-system
@@ -65,7 +65,7 @@ subjects:
   name: default
   namespace: kube-system
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: role-ceph-in-ceph
@@ -79,7 +79,7 @@ subjects:
   name: default
   namespace: ceph
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: role-ceph-sc
@@ -93,7 +93,7 @@ subjects:
   namespace: kube-system
 ---
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: role-ceph-sc-ns-ceph

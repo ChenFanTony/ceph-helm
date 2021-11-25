@@ -21,11 +21,14 @@ limitations under the License.
 {{- $dependencies := .Values.dependencies.mds }}
 ---
 kind: Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: ceph-mds
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+{{ tuple $envAll "ceph" "mds" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 6 }}
   template:
     metadata:
       name: ceph-mds
