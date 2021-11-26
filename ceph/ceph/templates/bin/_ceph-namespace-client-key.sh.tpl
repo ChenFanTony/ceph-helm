@@ -33,7 +33,7 @@ type: kubernetes.io/rbd
 data:
   key: $(echo ${CEPH_KEY})
 EOF
-  } | kubectl create --namespace ${kube_namespace} -f -
+  } | kubectl create --namespace ${kube_namespace} --validate=false -f -
 }
 
 ceph_activate_namespace ${DEPLOYMENT_NAMESPACE}
