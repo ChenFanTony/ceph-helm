@@ -45,7 +45,7 @@ type: Opaque
 data:
   ${CEPH_KEYRING_NAME}: $( kube_ceph_keyring_gen ${CEPH_KEYRING} ${CEPH_KEYRING_TEMPLATE} )
 EOF
-    } | kubectl create --namespace ${DEPLOYMENT_NAMESPACE} -f -
+    } | kubectl create --namespace ${DEPLOYMENT_NAMESPACE} --validate=false -f -
   fi
 }
 
