@@ -250,8 +250,8 @@ dependencies:
 ceph:
   rgw_keystone_auth: false
   enabled:
-    mds: true
-    rgw: true
+    mds: false
+    rgw: false
     mgr: true
   storage:
     # will have $NAMESPACE/{osd,mon} appended
