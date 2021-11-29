@@ -154,6 +154,16 @@ spec:
             - name: DEBUG
               value: {{ $.Values.debug }}
             {{ end }}
+            {{- if eq $.Values.type "bluestore" }}
+            - name: STORAGE_TYPE
+              value: {{ $.Values.type }}
+            - name: STORAGE_LOCATION
+              value: {{ $value.data.location }}
+            - name: BLOCK_DB
+              value: {{ $value.data.block_db }}
+            - name: BLOCK_WAL
+              value: {{ $value.data.block_wal }}
+            {{- end }}
             - name: HOSTNAME
               {{- if $value.hostname }}
               value: {{ $value.hostname }}
@@ -254,6 +264,16 @@ spec:
             - name: DEBUG
               value: {{ $.Values.debug }}
             {{ end }}
+            {{- if eq $.Values.type "bluestore" }}
+            - name: STORAGE_TYPE
+              value: {{ $.Values.type }}
+            - name: STORAGE_LOCATION
+              value: {{ $value.data.location }}
+            - name: BLOCK_DB
+              value: {{ $value.data.block_db }}
+            - name: BLOCK_WAL
+              value: {{ $value.data.block_wal }}
+            {{- end }}
             - name: HOSTNAME
               {{- if $value.hostname }}
               value: {{ $value.hostname }}

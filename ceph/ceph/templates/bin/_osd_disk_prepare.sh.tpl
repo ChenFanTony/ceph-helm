@@ -1,6 +1,10 @@
 #!/bin/bash
 set -ex
 
+if [ "x${STORAGE_TYPE}" == "xbluestore" ]; then
+  export OSD_BLUESTORE=1
+fi
+
 function osd_disk_prepare {
   if [[ -z "${OSD_DEVICE}" ]];then
     log "ERROR- You must provide a device to build your OSD ie: /dev/sdb"
@@ -45,6 +49,17 @@ function osd_disk_prepare {
 
   if [[ ${OSD_BLUESTORE} -eq 0 ]]; then
     ceph-disk -v prepare ${CLI_OPTS} --filestore ${OSD_DEVICE}
+  elif [[ ${OSD_BLUESTORE} -eq 1 ]]; then
+    CLI_OPTS="${CLI_OPTS} --bluestore"
+    if [ ! -z "$BLOCK_DB" ]; then
+      CLI_OPTS="${CLI_OPTS} --block.db ${BLOCK_DB}"
+    fi
+
+    if [ ! -z "$BLOCK_WAL" ]; then
+      CLI_OPTS="${CLI_OPTS} --block.wal ${BLOCK_WAL}"
+    fi
+
+    ceph-disk -v prepare ${CLI_OPTS} ${OSD_DEVICE}
   elif [[ ${OSD_DMCRYPT} -eq 1 ]]; then
     # the admin key must be present on the node
     if [[ ! -e $ADMIN_KEYRING ]]; then
@@ -65,7 +80,9 @@ function osd_disk_prepare {
   # watch the udev event queue, and exit if all current events are handled
   udevadm settle --timeout=600
 
-  if [[ -n "${OSD_JOURNAL}" ]]; then
+  if [[ ${OSD_BLUESTORE} -eq 1 ]]; then
+    :
+  elif [[ -n "${OSD_JOURNAL}" ]]; then
     wait_for_file ${OSD_JOURNAL}
     chown ceph. ${OSD_JOURNAL}
   else
