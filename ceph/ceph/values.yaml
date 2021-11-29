@@ -184,6 +184,7 @@ conf:
     append:
     config:
       global:
+        fsid: edbfd943-1b63-40b9-b176-461f4a91a7c4
         mon_host: null
       osd:
         #ports
