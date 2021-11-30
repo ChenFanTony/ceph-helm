@@ -27,7 +27,7 @@ function osd_disk_prepare {
   timeout 10 ceph ${CLI_OPTS} --name client.bootstrap-osd --keyring $OSD_BOOTSTRAP_KEYRING health || exit 1
 
   # search for some ceph metadata on the disk
-  if [[ "$(parted --script ${OSD_DEVICE} print | egrep '^ ${STORAGE_LOCATION}.*ceph data')" ]]; then
+  if [[ "$(parted --script ${OSD_DEVICE} print | egrep '^ '${STORAGE_LOCATION}'.*ceph data')" ]]; then
     # parted will trigger udev, so make sure all current udev event be handled.
     udevadm settle --timeout=600 && partprobe ${OSD_DEVICE} && \
       udevadm settle --timeout=600
