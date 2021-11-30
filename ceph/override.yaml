@@ -1,10 +1,18 @@
 network:
-  public:   172.21.0.0/20
-  cluster:   172.21.0.0/20
+  public:   192.168.1.0/22
+  cluster:   192.168.1.0/22
 
+type: bluestore
 osd_devices:
   - name: dev-vdb
     device: /dev/vdb
+    data:
+      location: "1"
+      # Separate block devices may be used for block.db and/or block.wal
+      # Without these values they will be co-located on the data volume
+      block_db: /dev/vdb2
+      block_wal: /dev/vdb3
+      block_data: /dev/vdb4
     zap: "1"
 
 storageclass:

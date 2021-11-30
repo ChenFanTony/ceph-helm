@@ -5,6 +5,10 @@ if [ "x${STORAGE_TYPE}" == "xbluestore" ]; then
   export OSD_BLUESTORE=1
 fi
 
+if [[ -z "${STORAGE_LOCATION}" ]]; then
+  export STORAGE_LOCATION=1
+fi
+
 function osd_disk_prepare {
   if [[ -z "${OSD_DEVICE}" ]];then
     log "ERROR- You must provide a device to build your OSD ie: /dev/sdb"
@@ -23,7 +27,7 @@ function osd_disk_prepare {
   timeout 10 ceph ${CLI_OPTS} --name client.bootstrap-osd --keyring $OSD_BOOTSTRAP_KEYRING health || exit 1
 
   # search for some ceph metadata on the disk
-  if [[ "$(parted --script ${OSD_DEVICE} print | egrep '^ 1.*ceph data')" ]]; then
+  if [[ "$(parted --script ${OSD_DEVICE} print | egrep '^ ${STORAGE_LOCATION}.*ceph data')" ]]; then
     # parted will trigger udev, so make sure all current udev event be handled.
     udevadm settle --timeout=600 && partprobe ${OSD_DEVICE} && \
       udevadm settle --timeout=600
@@ -59,7 +63,7 @@ function osd_disk_prepare {
       CLI_OPTS="${CLI_OPTS} --block.wal ${BLOCK_WAL}"
     fi
 
-    ceph-disk -v prepare ${CLI_OPTS} ${OSD_DEVICE}
+    ceph-disk -v prepare ${CLI_OPTS} ${OSD_DEVICE}${STORAGE_LOCATION} "" ${BLOCK_DATA}
   elif [[ ${OSD_DMCRYPT} -eq 1 ]]; then
     # the admin key must be present on the node
     if [[ ! -e $ADMIN_KEYRING ]]; then
@@ -81,7 +85,7 @@ function osd_disk_prepare {
   udevadm settle --timeout=600
 
   if [[ ${OSD_BLUESTORE} -eq 1 ]]; then
-    :
+    sgdisk -c "${STORAGE_LOCATION}:ceph data" ${OSD_DEVICE}
   elif [[ -n "${OSD_JOURNAL}" ]]; then
     wait_for_file ${OSD_JOURNAL}
     chown ceph. ${OSD_JOURNAL}

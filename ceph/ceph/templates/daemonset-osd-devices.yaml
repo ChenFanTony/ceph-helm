@@ -158,11 +158,13 @@ spec:
             - name: STORAGE_TYPE
               value: {{ $.Values.type }}
             - name: STORAGE_LOCATION
-              value: {{ $value.data.location }}
+              value: {{ $value.data.location | quote }}
             - name: BLOCK_DB
               value: {{ $value.data.block_db }}
             - name: BLOCK_WAL
               value: {{ $value.data.block_wal }}
+            - name: BLOCK_DATA
+              value: {{ $value.data.block_data }}
             {{- end }}
             - name: HOSTNAME
               {{- if $value.hostname }}
@@ -268,11 +270,13 @@ spec:
             - name: STORAGE_TYPE
               value: {{ $.Values.type }}
             - name: STORAGE_LOCATION
-              value: {{ $value.data.location }}
+              value: {{ $value.data.location | quote }}
             - name: BLOCK_DB
               value: {{ $value.data.block_db }}
             - name: BLOCK_WAL
               value: {{ $value.data.block_wal }}
+            - name: BLOCK_DATA
+              value: {{ $value.data.block_data }}
             {{- end }}
             - name: HOSTNAME
               {{- if $value.hostname }}

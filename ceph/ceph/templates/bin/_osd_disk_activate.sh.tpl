@@ -1,6 +1,14 @@
 #!/bin/bash
 set -ex
 
+if [ "x${STORAGE_TYPE}" == "xbluestore" ]; then
+  export OSD_BLUESTORE=1
+fi
+
+if [[ -z "${STORAGE_LOCATION}" ]]; then
+  export STORAGE_LOCATION=1
+fi
+
 function osd_activate {
   if [[ -z "${OSD_DEVICE}" ]];then
     log "ERROR- You must provide a device to build your OSD ie: /dev/sdb"
@@ -10,10 +18,15 @@ function osd_activate {
   CEPH_DISK_OPTIONS=""
   CEPH_OSD_OPTIONS=""
 
-  DATA_UUID=$(blkid -o value -s PARTUUID ${OSD_DEVICE}*1)
-  LOCKBOX_UUID=$(blkid -o value -s PARTUUID ${OSD_DEVICE}3 || true)
-  JOURNAL_PART=$(dev_part ${OSD_DEVICE} 2)
-  ACTUAL_OSD_DEVICE=$(readlink -f ${OSD_DEVICE}) # resolve /dev/disk/by-* names
+  if [[ ${OSD_DMCRYPT} -eq 1 ]]; then
+    DATA_UUID=$(blkid -o value -s PARTUUID ${OSD_DEVICE}*1)
+    LOCKBOX_UUID=$(blkid -o value -s PARTUUID ${OSD_DEVICE}3 || true)
+  fi
+
+  if [[ ${OSD_BLUESTORE} -eq 0 ]]; then
+    JOURNAL_PART=$(dev_part ${OSD_DEVICE} 2)
+    ACTUAL_OSD_DEVICE=$(readlink -f ${OSD_DEVICE}) # resolve /dev/disk/by-* names
+  fi
 
   # watch the udev event queue, and exit if all current events are handled
   udevadm settle --timeout=600
@@ -25,12 +38,14 @@ function osd_activate {
     CEPH_OSD_OPTIONS="${CEPH_OSD_OPTIONS} --osd-journal ${OSD_JOURNAL}"
   else
     wait_for_file $(dev_part ${OSD_DEVICE} 1)
-    chown ceph. $JOURNAL_PART
+    if [[ ${OSD_BLUESTORE} -eq 0 ]]; then
+      chown ceph. $JOURNAL_PART
+    fi
   fi
 
   chown ceph. /var/log/ceph
 
-  DATA_PART=$(dev_part ${OSD_DEVICE} 1)
+  DATA_PART=$(dev_part ${OSD_DEVICE} ${STORAGE_LOCATION})
   MOUNTED_PART=${DATA_PART}
 
   if [[ ${OSD_DMCRYPT} -eq 1 ]]; then
